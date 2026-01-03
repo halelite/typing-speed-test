@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
-import clsx from "clsx";
 
 const TextSection = ({ words }: any) => {
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -10,34 +9,31 @@ const TextSection = ({ words }: any) => {
 	const [testCompleted, setTestCompleted] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState(0);
 
-	// prevent mouse scroll
 	useEffect(() => {
 		const container = textRef.current;
 		if (!container) return;
 
 		const preventScroll = (e: WheelEvent) => {
 			e.preventDefault();
+			e.stopPropagation();
+			return false;
 		};
-
-		container.addEventListener("wheel", preventScroll, { passive: false });
-
-		return () => {
-			container.removeEventListener("wheel", preventScroll);
-		};
-	}, []);
-
-	// prevent touch scroll
-	useEffect(() => {
-		const container = textRef.current;
-		if (!container) return;
 
 		const preventTouch = (e: TouchEvent) => {
-			e.preventDefault();
+			// Only prevent vertical scroll
+			if (e.touches.length === 1) {
+				e.preventDefault();
+			}
 		};
 
+		// Prevent wheel/touchpad scrolling
+		container.addEventListener("wheel", preventScroll, { passive: false });
+
+		// Prevent touch scrolling on mobile
 		container.addEventListener("touchmove", preventTouch, { passive: false });
 
 		return () => {
+			container.removeEventListener("wheel", preventScroll);
 			container.removeEventListener("touchmove", preventTouch);
 		};
 	}, []);
@@ -64,6 +60,12 @@ const TextSection = ({ words }: any) => {
 
 	const handleRestartTest = () => {
 		setTypedText("");
+		setCurrentPosition(0);
+		setTestCompleted(false);
+
+		if (textRef.current) {
+			textRef.current.scrollTop = 0;
+		}
 	};
 
 	const handleKeyDown = useCallback(
@@ -75,12 +77,14 @@ const TextSection = ({ words }: any) => {
 				"PageDown",
 				"Home",
 				"End",
-				" ",
+				"ArrowLeft",
+				"ArrowRight",
 			];
 
 			// prevent keyboard scrolling (space, arrows, page up/down)
 			if (scrollKeys.includes(e.key)) {
 				e.preventDefault();
+				return;
 			}
 
 			if (e.key === "Backspace") {
@@ -125,7 +129,7 @@ const TextSection = ({ words }: any) => {
 				autoFocus
 				value={typedText}
 				onChange={(e) => {
-					// console.log("typed text", typedText);
+					console.log("typed text", typedText);
 					setTypedText(e.target.value);
 				}}
 				onBlur={() => inputRef.current?.focus()}

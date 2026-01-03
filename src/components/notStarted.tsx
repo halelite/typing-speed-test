@@ -37,7 +37,7 @@ const NotStarted = ({ setStartTest }: NotStartedProps) => {
 
 				<div className="absolute top-[50%] left-[50%] translate-[-50%] w-full flex flex-col gap-5 items-center">
 					<Button
-						className="bg-blue px-4 py-6 rounded-12 text-20 leading-120 tracking-[-0.3px] font-semibold"
+						className="bg-blue px-4 py-6 rounded-12 text-20 leading-120 tracking-[-0.3px] font-semibold hover:bg-blue-light focus:outline-blue focus:outline-2 focus:outline-offset-2"
 						onClick={() => setStartTest(true)}
 					>
 						Start Typing Test

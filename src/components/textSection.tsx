@@ -1,12 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
+import { calculateWpm } from "@/assets/helpers";
 
-const TextSection = ({ words }: any) => {
+type TextProps = {
+	words: any;
+	setWpm: (v: number) => void;
+	testStarted: boolean;
+	setStartTest: (v: boolean) => void;
+};
+
+const TextSection = ({
+	words,
+	setWpm,
+	testStarted,
+	setStartTest,
+}: TextProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const currentIndexRef = useRef<HTMLSpanElement | null>(null);
 	const textRef = useRef<HTMLDivElement>(null);
 	const [typedText, setTypedText] = useState("");
-	const [testCompleted, setTestCompleted] = useState(false);
+	const [totalLetters, setTotalLetters] = useState(0);
+	// const [testCompleted, setTestCompleted] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState(0);
 
 	useEffect(() => {
@@ -58,10 +72,18 @@ const TextSection = ({ words }: any) => {
 		}
 	}, [typedText]);
 
+	useEffect(() => {
+		if (!testStarted) return;
+
+		setWpm(calculateWpm(totalLetters));
+		console.log("total letters", totalLetters);
+	}, [typedText, totalLetters]);
+
 	const handleRestartTest = () => {
 		setTypedText("");
 		setCurrentPosition(0);
-		setTestCompleted(false);
+		// setTestCompleted(false);
+		setStartTest(true);
 
 		if (textRef.current) {
 			textRef.current.scrollTop = 0;
@@ -90,6 +112,7 @@ const TextSection = ({ words }: any) => {
 			if (e.key === "Backspace") {
 				if (currentPosition > 0) {
 					setCurrentPosition((prev) => prev - 1);
+					setTotalLetters((prev) => prev + 1);
 				}
 				return;
 			}
@@ -99,11 +122,13 @@ const TextSection = ({ words }: any) => {
 			}
 
 			if (currentPosition >= words[0].length) {
-				setTestCompleted(true);
+				// setTestCompleted(true);
+				setStartTest(false);
 				return;
 			}
 
 			setCurrentPosition((prev) => prev + 1);
+			setTotalLetters((prev) => prev + 1);
 		},
 		[currentPosition]
 	);

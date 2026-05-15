@@ -5,6 +5,7 @@ import { calculateWpm } from "@/assets/helpers";
 type TextProps = {
 	words: any;
 	setWpm: (v: number) => void;
+	setAccuracy: (v: number) => void;
 	testStarted: boolean;
 	setStartTest: (v: boolean) => void;
 };
@@ -12,6 +13,7 @@ type TextProps = {
 const TextSection = ({
 	words,
 	setWpm,
+	setAccuracy,
 	testStarted,
 	setStartTest,
 }: TextProps) => {
@@ -20,6 +22,7 @@ const TextSection = ({
 	const textRef = useRef<HTMLDivElement>(null);
 	const [typedText, setTypedText] = useState("");
 	const [totalLetters, setTotalLetters] = useState(0);
+	const [correctLetters, setCorrectLetters] = useState(0);
 	// const [testCompleted, setTestCompleted] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState(0);
 

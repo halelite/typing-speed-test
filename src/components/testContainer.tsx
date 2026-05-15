@@ -23,6 +23,7 @@ const TestContainer = () => {
 			{startTest ? (
 				<TextSection
 					setWpm={setWpm}
+					setAccuracy={setAccuracy}
 					testStarted={startTest}
 					words={words}
 					setStartTest={setStartTest}

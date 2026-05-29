@@ -1,30 +1,40 @@
+import type { TestStatus } from "@/assets/types";
 import { useEffect, useState } from "react";
 
 type CountDownProps = {
-	testStarted: boolean;
-	setStartTest: (v: boolean) => void;
+  testStatus: TestStatus;
+  setTestStatus: (v: TestStatus) => void;
+  setElapsedTime: (v: number) => void;
 };
 
 const initialTime = 60;
 
-export const CountDown = ({ testStarted, setStartTest }: CountDownProps) => {
-	const [timer, setTimer] = useState(initialTime);
+export const CountDown = ({
+  testStatus,
+  setTestStatus,
+  setElapsedTime,
+}: CountDownProps) => {
+  const [timer, setTimer] = useState(initialTime);
 
-	useEffect(() => {
-		if (!testStarted) return;
+  useEffect(() => {
+    if (testStatus !== "running") {
+      setTimer(initialTime);
+      return;
+    }
 
-		if (timer === 0) {
-			setStartTest(false);
-			setTimer(initialTime);
-			return;
-		}
+    if (timer === 0) {
+      setTestStatus("finished");
+      setTimer(initialTime);
+      return;
+    }
 
-		const interval = setInterval(() => {
-			setTimer((timer) => timer - 1);
-		}, 1000);
+    const interval = setInterval(() => {
+      setTimer((timer) => timer - 1);
+      setElapsedTime(initialTime - timer);
+    }, 1000);
 
-		return () => clearInterval(interval);
-	}, [testStarted, setStartTest, timer]);
+    return () => clearInterval(interval);
+  }, [testStatus, setTestStatus, timer]);
 
-	return `0:${timer < 10 ? `0${timer}` : timer}`;
+  return `0:${timer < 10 ? `0${timer}` : timer}`;
 };

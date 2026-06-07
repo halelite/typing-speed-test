@@ -1,5 +1,5 @@
 import type { Difficulty } from "./types";
-import data from "../../public/data.json";
+import data from "@/data/data.json";
 
 export function calculateWpm(letters: number, time: number) {
   if (time <= 0) return 0;

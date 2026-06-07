@@ -5,6 +5,7 @@ import TextSection from "./textSection";
 import Results from "./results";
 import type { Difficulty, Mode, TestStatus } from "@/assets/types";
 import { getPersonalBest, getRandomText } from "@/assets/helpers";
+import { usePersonalBest } from "@/context/personalBestContext";
 
 const TestContainer = () => {
   const [testStatus, setTestStatus] = useState<TestStatus>("idle");
@@ -14,9 +15,10 @@ const TestContainer = () => {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [words, setWords] = useState(getRandomText(difficulty));
-  const [personalBest, setPersonalBest] = useState(getPersonalBest());
+  // const [personalBest, setPersonalBest] = useState(getPersonalBest());
+  const { personalBest, updatePersonalBest } = usePersonalBest();
 
-  console.log("personal best", personalBest);
+  // console.log("personal best", personalBest);
   console.log("getPersonalBest()", getPersonalBest());
   console.log("localStorage", localStorage.getItem("wpm-history"));
 
@@ -32,11 +34,7 @@ const TestContainer = () => {
     }
 
     if (testStatus === "finished") {
-      const storedHistory = localStorage.getItem("wpm-history");
-
-      const wpmHistory = storedHistory ? JSON.parse(storedHistory) : [];
-      localStorage.setItem("wpm-history", JSON.stringify([...wpmHistory, wpm]));
-      setPersonalBest(getPersonalBest());
+      updatePersonalBest(wpm);
     }
   }, [testStatus]);
 
